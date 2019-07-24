@@ -1,0 +1,436 @@
+{% load static %}
+{% load auth_extras %}
+{% load render_table from django_tables2 %}
+{% load humanize %} {% load tz %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+	<title>Sistem Pengelolaan Data Sampah Kota Semarang</title>
+	<!-- Meta tag Keywords -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="keywords" content="Sistem Pengelolaan Data Sampah Kota Semarang" />
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- //Meta tag Keywords -->
+
+	<!-- Custom-Files -->
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<!-- Bootstrap-Core-CSS -->
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all" />
+	<!-- Style-CSS -->
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<!-- Font-Awesome-Icons-CSS -->
+	<!-- //Custom-Files -->
+
+	<!-- Web-Fonts -->
+	<link href="//fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=devanagari,latin-ext"
+	 rel="stylesheet">
+	<!-- Web-Fonts -->
+   <link href="//fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=devanagari,latin-ext"
+    rel="stylesheet">
+   <!-- //Web-Fonts -->
+
+     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.19/b-1.5.6/sl-1.3.0/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/editor.dataTables.css' %}">
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="{% static 'js/filejs.js' %}"></script>
+</head>
+
+<body>
+	<!-- main banner -->
+	<div class="main-top" id="home">
+		<!-- header -->
+		<header>
+			<div class="container-fluid">
+				<div class="header d-lg-flex justify-content-between align-items-center py-3 px-sm-3">
+					<!-- logo -->
+					<div id="logo">
+						<h1><a href="{% url 'wasteweb:index' %}"><span class="fa fa-linode mr-2"></span>Sistem PDSK Semarang</a></h1>
+					</div>
+					<!-- //logo -->
+					<!-- nav -->
+					<div class="nav_w3ls">
+						<nav>
+							<label for="drop" class="toggle">Menu</label>
+							<input type="checkbox" id="drop" />
+							<ul class="menu">
+								<li><a href="{% url 'wasteweb:index' %}" class="active">Beranda</a></li>
+								<li><a href="{% url 'wasteweb:tentang' %}">Tentang</a></li>
+								<li><a href="{% url 'wasteweb:report' %}">Report</a></li>
+								<li><a href="{% url 'wasteweb:kontak' %}">Kontak</a></li>
+                                {% if request.user|has_group:"banksampah" %}
+                                <li><a href="{% url 'wasteweb:bsdata' %}">Input Data (Bank Sampah)</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+								{% elif request.user|has_group:"operator" %}
+								<li><a href="{% url 'wasteweb:opdata' %}">Input Data (Operator)</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+                                {% else %}
+                                <li><a href="{% url 'login' %}">Login</a></li>
+                                {% endif %}
+							</ul>
+						</nav>
+					</div>
+					<!-- //nav -->
+					<div class="d-flex mt-lg-1 mt-sm-2 mt-3 justify-content-center">
+						<!-- download -->
+						<a class="dwn-w3ls btn" href="http://w3layouts.com/" target="_blank">
+							<span class="fa fa-cloud-download"></span>
+						</a>
+						<!-- //download -->
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- //header -->
+
+ {% block content %}
+    <div class="container">
+        <br><center><h3>Input Data Sampah Kota Semarang (Bank Sampah)</h3></center><br>
+        <div class="row">
+            <div class="col-md-12 order-md-1">
+                <div class="card-body p-0">
+                    <div class="row">
+
+
+                        <table id="tblData" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nama Sampah</th>
+                                    <th class="must_hide">Nama Lokasi</th>
+									<th class="must_hide">Tanggal</th>
+                                    <th class="must_hide">Jumlah</th>
+                                    <th></th>
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tbData">
+                                {% if db_data %}
+                                    {% for d in db_data %}
+                                        <tr id="tr{{ d.id }}">
+                                            <td>{{ d.nama_sampah }}</td>
+                                            <td class="must_hide">{{ d.nama_lokasi }}</td>
+                                            <td class="must_hide">{{ d.tanggal }}</td>
+                                            <td class="must_hide">{{ d.jumlah }}</td>
+                                            <td>
+                                                <a href="{% url 'wasteweb:TambahBSForm_view' %}">
+                                                    <i class="fa fa-plus"></i>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'wasteweb:updateBSdata' d.id %}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                            <td>
+												<a href="{% url 'wasteweb:hapusBSdata' d.id %}"><i class="fa fa-trash"></i></a>
+											</td>
+                                            <td>
+                                                {{ d.id }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/common.js' %}" defer></script>
+<script src="{% static 'sweetalert/sweetalert.js' %}" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+<script defer src="{% static 'daterangepicker/daterangepicker.js' %}"></script>
+
+<!-- dataTable objects -->
+<script defer src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script defer src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script defer src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+<script defer src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap4.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+<script defer src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+<script defer src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.print.min.js"></script>
+<script defer src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script>
+
+<script defer>
+    var mStartDate = moment().format('YYYY-MM-DD');
+    var mEndDate = moment().format('YYYY-MM-DD');
+    var BASE_URL = "{{ BASE_URL }}";
+    var THIS_OBJ = '';
+    $(function () {
+        var table = $('#tblData').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "columnDefs": [
+                { "orderable": false, "targets": [4, 5, 6, 7], "className": 'dt-center' },
+                { "visible": false, "targets": 8 }
+            ],
+            "order": [[ 8, "desc" ]],
+            "buttons": [ 'copy', 'excel', 'pdf', 'colvis' ]
+        });
+        table.buttons().container()
+        .appendTo('#dataTableExportButtons');
+        //Date range as a button
+		$('#daterange-btn').daterangepicker(
+			{
+				ranges   : {
+				  	'Today'       : [moment(), moment()],
+				  	'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+				  	'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+				  	'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+				  	'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+				  	'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+				},
+				startDate: moment(),
+				endDate  : moment()
+			},
+		  	function (start, end)
+		  	{
+				mStartDate = start.format('YYYY-MM-DD');
+				mEndDate = end.format('YYYY-MM-DD');
+				$('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+		  	}
+		)
+    });
+    function confirmUserDeleteAction(this)
+    {
+        THIS_OBJ = this;
+        var csrfmiddlewaretoken = Cookies.get('csrftoken');
+        var row_id = $(THIS_OBJ).attr("row-id");
+        console.log("csrfmiddlewaretoken: " + csrfmiddlewaretoken);
+        //confirm user action
+        swal({
+            title: "Apakah Anda yakin?",
+            text: "Setelah menghapus, Anda tidak dapat mengembalikan data.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                delRow();
+            }
+        });
+    }
+    function delRow()
+    {
+        var csrfmiddlewaretoken = Cookies.get('csrftoken');
+        var row_id = $(THIS_OBJ).attr("row-id");
+        if (csrfmiddlewaretoken === undefined || csrfmiddlewaretoken === null || csrfmiddlewaretoken === ""){
+            swal("CSRF Token is Missing!", "Please refresh this page and try again.", "error");
+            return false;
+        }
+        $.ajax({
+            method: "POST",
+            url: BASE_URL+'django_basic_crud_delete/',
+            data: "csrfmiddlewaretoken="+ csrfmiddlewaretoken +"&row_id="+row_id,
+            cache: false,
+            dataType: "json",
+            success: function(jResults)
+            {
+                if(jResults.alert_type =='success'){
+                    swal(jResults.alert_title, jResults.alert_msg, jResults.alert_type);
+                    var table = $('#tblData').DataTable();
+                    table.row("#tr"+row_id).remove().draw( false );
+                }
+                else {
+                    var strErr = jResults.alert_msg + '';
+                    strErr = strErr.split(",").pop();
+                    swal(jResults.alert_title, strErr, jResults.alert_type);
+                }
+            }
+        });
+    }
+    $(document).ready(function()
+    {
+        //Must hide table columns when small screens
+        if ($(window).width() < 700){
+            $('.must_hide').hide();
+        }
+        //Hit enter key from input search box
+		$('#fsearch').on("keypress", function(e) {
+	        if (e.keyCode == 13) {
+				$('button[id = btnSearchFile]').click();
+	            return false;
+	        }
+		});
+        //Search data by text
+		$('.SearchDataText').on("click",function()
+        {
+			//GET THE VALUE
+            var csrfmiddlewaretoken = Cookies.get('csrftoken');
+			$("#divSearchFile").find("input").serialize();
+	        fsearch = $("#fsearch").val().trim();
+            if (csrfmiddlewaretoken === undefined || csrfmiddlewaretoken === null || csrfmiddlewaretoken === ""){
+                swal("CSRF Token is Missing!", "Please refresh this page and try again.", "error");
+                return false;
+            }
+	        $.ajax
+			({
+				type: "POST",
+				url: BASE_URL+"bsdata_search_text/",
+				<!--INSERT PARAMETERS HERE-->
+				data: 'csrfmiddlewaretoken='+csrfmiddlewaretoken +'&fsearch='+fsearch,
+				cache: false,
+				dataType: "json",
+				success: function(jResults)
+				{
+                    $('#tbData').empty();
+                    var table = $('#tblData').DataTable();
+                    table.clear();
+                    var rowStatus = '';
+					var data = jQuery.parseJSON(jResults);
+					$.each(data, function(i, obj) {
+                        var add_row = `<a href="{% url 'wasteweb:TambahOPForm_view' %}"><i class="fa fa-plus"></i></a>`;
+                        var edit_row = `<a href="`+ obj.edit_url +`"><i class="fa fa-edit"></i></a>`;
+                        var del_row = `<a href="javascript:void(0);" onclick="confirmUserDeleteAction(pThis);" row-id="`+ obj.id +`"><i class="fas fa-trash-alt"></i></a>`;
+                        table.row.add([
+                            obj.nama_sampah,
+                            obj.nama_lokasi,
+                            obj.tanggal,
+                            obj.jumlah,
+                            add_row,
+                            edit_row,
+                            del_row,
+                            obj.id
+                        ]).node().id = 'tr'+obj.id;
+                        table.draw( false );
+			        });
+				}
+			});
+        });
+        //Search data by date range
+		$('.SearchDataDR').on("click",function()
+        {
+            //GET THE VALUE
+            var csrfmiddlewaretoken = Cookies.get('csrftoken');
+            if (csrfmiddlewaretoken === undefined || csrfmiddlewaretoken === null || csrfmiddlewaretoken === ""){
+                swal("CSRF Token is Missing!", "Please refresh this page and try again.", "error");
+                return false;
+            }
+	        $.ajax
+			({
+				type: "POST",
+				url: BASE_URL+"bsdata_search_dr/",
+				<!--INSERT PARAMETERS HERE-->
+				data: 'csrfmiddlewaretoken='+csrfmiddlewaretoken + '&mStartDate='+mStartDate + '&mEndDate='+mEndDate,
+				cache: false,
+				dataType: "json",
+				success: function(jResults)
+				{
+                    $('#tbData').empty();
+                    var table = $('#tblData').DataTable();
+                    table.clear();
+                    var rowStatus = '';
+					var data = jQuery.parseJSON(jResults);
+					$.each(data, function(i, obj) {
+                        var add_row = `<a href="{% url 'wasteweb:TambahBSForm_view' %}"><i class="fa fa-plus"></i></a>`;
+                        var edit_row = `<a href="`+ obj.edit_url +`"><i class="fa fa-edit"></i></a>`;
+                        var del_row = `<a href="javascript:void(0);" onclick="confirmUserDeleteAction(this);" row-id="`+ obj.id +`"><i class="fas fa-trash-alt"></i></a>`;
+                        table.row.add([
+                            obj.nama_sampah,
+                            obj.nama_lokasi,
+                            obj.tanggal,
+                            obj.jumlah,
+                            add_row,
+                            edit_row,
+                            del_row,
+                            obj.id
+                        ]).node().id = 'tr'+obj.id;
+                        table.draw( false );
+			        });
+				}
+			});
+        });
+    });
+</script>
+{% endblock %}
+
+</div>
+	<!-- copyright bottom -->
+	<div class="copy-bottom bg-li py-4 border-top">
+		<div class="container-fluid">
+			<div class="d-md-flex px-md-3 position-relative text-center">
+				<!-- footer social icons -->
+				<div class="social-icons-footer mb-md-0 mb-3">
+					<ul class="list-unstyled">
+						<li>
+							<a href="http://facebook.com/DLHSemarang">
+								<span class="fa fa-facebook"></span>
+							</a>
+						</li>
+						<li>
+							<a href="http://twitter.com/dlhkotasemarang">
+								<span class="fa fa-twitter"></span>
+							</a>
+						</li>
+						<li>
+							<a href="dlh.semarangkota@gmail.com">
+								<span class="fa fa-google-plus"></span>
+							</a>
+						</li>
+						<li>
+							<a href="http://instagram.com/dlh.semarang">
+								<span class="fa fa-instagram"></span>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!-- //footer social icons -->
+				<!-- copyright -->
+				<div class="copy_right mx-md-auto mb-md-0 mb-3">
+					<p class="text-bl let">© 2019 Sistem Pengelolaan Data Sampah Kota Semarang. All rights reserved | Desain oleh
+						<a href="http://dlh.semarangkota.go.id/" target="_blank">DLHK Kota Semarang</a>
+					</p>
+				</div>
+				<!-- //copyright -->
+				<!-- move top icon -->
+				<a href="#home" class="move-top text-center">
+					<span class="fa fa-level-up" aria-hidden="true"></span>
+				</a>
+				<!-- //move top icon -->
+			</div>
+		</div>
+	</div>
+	<!-- //copyright bottom -->
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.15/api/row().show().js"></script>
+
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.19/b-1.5.6/sl-1.3.0/datatables.min.js"></script>
+<script type="text/javascript" src="{% static 'js/dataTables.editor.js' %}"></script>
+
+</body>
+
+</html>

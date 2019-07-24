@@ -1,0 +1,323 @@
+{% load static %}
+{% load auth_extras %}
+{% load i18n %}
+{% load django_tables2 %}
+{% load render_table from django_tables2 %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+	<title>Sistem Pengelolaan Data Sampah Kota Semarang</title>
+	<!-- Meta tag Keywords -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="keywords" content="Sistem Pengelolaan Data Sampah Kota Semarang" />
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- //Meta tag Keywords -->
+
+	<!-- Custom-Files -->
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<!-- Bootstrap-Core-CSS -->
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all" />
+	<!-- Style-CSS -->
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<!-- Font-Awesome-Icons-CSS -->
+	<!-- //Custom-Files -->
+
+	<!-- Web-Fonts -->
+	<link href="//fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=devanagari,latin-ext"
+	 rel="stylesheet">
+	<!-- //Web-Fonts -->
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+</head>
+
+<body>
+	<!-- main banner -->
+	<div class="main-top" id="home">
+		<!-- header -->
+		<header>
+			<div class="container-fluid">
+				<div class="header d-lg-flex justify-content-between align-items-center py-3 px-sm-3">
+					<!-- logo -->
+					<div id="logo">
+						<h1><a href="{% url 'wasteweb:index' %}"><span class="fa fa-linode mr-2"></span>Sistem PDSK Semarang</a></h1>
+					</div>
+					<!-- //logo -->
+					<!-- nav -->
+					<div class="nav_w3ls">
+						<nav>
+							<label for="drop" class="toggle">Menu</label>
+							<input type="checkbox" id="drop" />
+							<ul class="menu">
+								<li><a href="{% url 'wasteweb:index' %}" class="active">Beranda</a></li>
+								<li><a href="{% url 'wasteweb:tentang' %}">Tentang</a></li>
+								<li><a href="{% url 'wasteweb:report' %}">Report</a></li>
+								<li><a href="{% url 'wasteweb:kontak' %}">Kontak</a></li>
+								{% if request.user|has_group:"banksampah" %}
+                                <li><a href="{% url 'wasteweb:bsdata' %}">Input Data (Bank Sampah)</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+								{% elif request.user|has_group:"operator" %}
+								<li><a href="{% url 'wasteweb:opdata' %}">Input Data (Operator)</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+                                {% else %}
+                                <li><a href="{% url 'login' %}">Login</a></li>
+                                {% endif %}
+							</ul>
+						</nav>
+					</div>
+					<!-- //nav -->
+					<div class="d-flex mt-lg-1 mt-sm-2 mt-3 justify-content-center">
+						<!-- download -->
+						<a class="dwn-w3ls btn" href="http://w3layouts.com/" target="_blank">
+							<span class="fa fa-cloud-download"></span>
+						</a>
+						<!-- //download -->
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- //header -->
+
+{% block body %}
+    <div class="container">
+		<br><center><h3>Report Data Sampah Kota Semarang</h3></center><br>
+        <div class="row">
+            <div class="col-md-12 order-md-1">
+                <div class="card-body p-0">
+                    <div class="row">
+
+
+                        <table id="tblData" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nama Sampah</th>
+                                    <th class="must_hide">Nama Lokasi</th>
+									<th class="must_hide">Tanggal</th>
+                                    <th class="must_hide">Jumlah (kg)</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tbData">
+                                {% if db_data %}
+                                    {% for d in db_data %}
+                                        <tr id="tr{{ d.id }}">
+                                            <td>{{ d.nama_sampah }}</td>
+                                            <td class="must_hide">{{ d.nama_lokasi }}</td>
+                                            <td class="must_hide">{{ d.tanggal }}</td>
+                                            <td class="must_hide">{{ d.jumlah }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+</div>
+    <div class="container">
+		<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="SampahChart" style="position: relative; height:40vh; width:80vw"></canvas>
+		</div>
+		<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="TempatChart" style="position: relative; height:40vh; width:80vw"></canvas>
+		</div>
+		<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="TanggalChart" style="position: relative; height:40vh; width:80vw"></canvas>
+		</div>
+<script>
+var ctx = document.getElementById('SampahChart').getContext('2d');
+var SampahChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Plastik', 'Kertas', 'Kaca', 'Kain Tekstil', 'Karet Kulit', 'Kayu Ranting Daun', 'Logam', 'Sisa Makanan', 'Lainnya'],
+        datasets: [{
+            data: [1430, 100, 0, 0, 0, 0, 0, 0, 0],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        title: {
+            display: true,
+            text: 'Data Sampah Berdasarkan Jenis Sampah',
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+var ctx = document.getElementById('TempatChart').getContext('2d');
+var TempatChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Tembalang', 'Semarang Selatan', 'TPA'],
+        datasets: [{
+        	label: ['Tembalang'],
+            data: [230, 100, 1200],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        title: {
+            display: true,
+            text: 'Data Sampah Berdasarkan Lokasi',
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+var ctx = document.getElementById('TanggalChart').getContext('2d');
+var TanggalChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['18 May 2019', '7 July 2019', '8 July 2019'],
+        datasets: [{
+            label: ['18 May 2019'],
+            data: [1300, 100, 130],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        title: {
+            display: true,
+            text: 'Data Sampah Berdasarkan Tanggal',
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+    </div>
+
+	<!-- copyright bottom -->
+	<div class="copy-bottom bg-li py-4 border-top">
+		<div class="container-fluid">
+			<div class="d-md-flex px-md-3 position-relative text-center">
+				<!-- footer social icons -->
+				<div class="social-icons-footer mb-md-0 mb-3">
+					<ul class="list-unstyled">
+						<li>
+							<a href="http://facebook.com/DLHSemarang">
+								<span class="fa fa-facebook"></span>
+							</a>
+						</li>
+						<li>
+							<a href="http://twitter.com/dlhkotasemarang">
+								<span class="fa fa-twitter"></span>
+							</a>
+						</li>
+						<li>
+							<a href="dlh.semarangkota@gmail.com">
+								<span class="fa fa-google-plus"></span>
+							</a>
+						</li>
+						<li>
+							<a href="http://instagram.com/dlh.semarang">
+								<span class="fa fa-instagram"></span>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!-- //footer social icons -->
+				<!-- copyright -->
+				<div class="copy_right mx-md-auto mb-md-0 mb-3">
+					<p class="text-bl let">© 2019 Sistem Pengelolaan Data Sampah Kota Semarang. All rights reserved | Desain oleh
+						<a href="http://dlh.semarangkota.go.id/" target="_blank">DLHK Kota Semarang</a>
+					</p>
+				</div>
+				<!-- //copyright -->
+				<!-- move top icon -->
+				<a href="#home" class="move-top text-center">
+					<span class="fa fa-level-up" aria-hidden="true"></span>
+				</a>
+				<!-- //move top icon -->
+			</div>
+		</div>
+	</div>
+	<!-- //copyright bottom -->
+
+</body>
+
+</html>

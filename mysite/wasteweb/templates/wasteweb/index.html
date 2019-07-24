@@ -1,0 +1,337 @@
+{% load static %}
+{% load auth_extras %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+	<title>Sistem Pengelolaan Data Sampah Kota Semarang</title>
+	<!-- Meta tag Keywords -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="keywords" content="Sistem Pengelolaan Data Sampah Kota Semarang" />
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- //Meta tag Keywords -->
+
+	<!-- Custom-Files -->
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<!-- Bootstrap-Core-CSS -->
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all" />
+	<!-- Style-CSS -->
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<!-- Font-Awesome-Icons-CSS -->
+	<!-- //Custom-Files -->
+
+	<!-- Web-Fonts -->
+	<link href="//fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&amp;subset=devanagari,latin-ext"
+	 rel="stylesheet">
+	<!-- //Web-Fonts -->
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+	<!-- main banner -->
+	<div class="main-top" id="home">
+		<!-- header -->
+		<header>
+			<div class="container-fluid">
+				<div class="header d-lg-flex justify-content-between align-items-center py-3 px-sm-3">
+					<!-- logo -->
+					<div id="logo">
+						<h1><a href="{% url 'wasteweb:index' %}"><span class="fa fa-linode mr-2"></span>Sistem PDSK Semarang</a></h1>
+					</div>
+					<!-- //logo -->
+					<!-- nav -->
+					<div class="nav_w3ls">
+						<nav>
+							<label for="drop" class="toggle">Menu</label>
+							<input type="checkbox" id="drop" />
+							<ul class="menu">
+								<li><a href="{% url 'wasteweb:index' %}" class="active">Beranda</a></li>
+								<li><a href="{% url 'wasteweb:tentang' %}">Tentang</a></li>
+								<li>
+									<!-- First Tier Drop Down -->
+									<label for="drop-2" class="toggle toogle-2">Dropdown<span class="fa fa-angle-down" aria-hidden="true"></span>
+									</label>
+									<a href="#">Dropdown<span class="fa fa-angle-down" aria-hidden="true"></span></a>
+									<input type="checkbox" id="drop-2" />
+									<ul>
+										<li><a href="#tentang" class="drop-text">Tentang Kami</a></li>
+										<li><a href="#laporan" class="drop-text">Report</a></li>
+										<li><a href="#apa" class="drop-text">Apa Saja?</a></li>
+										<li><a href="#partners" class="drop-text">Partner Kami</a></li>
+									</ul>
+								</li>
+								<li><a href="{% url 'wasteweb:report' %}">Report</a></li>
+								<li><a href="{% url 'wasteweb:kontak' %}">Kontak</a></li>
+                                {% if request.user|has_group:"banksampah" %}
+                                <li><a href="{% url 'wasteweb:bsdata' %}">Input Data (Bank Sampah)</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+								{% elif request.user|has_group:"operator" %}
+								<li><a href="{% url 'wasteweb:opdata' %}">Input Data (Operator)</a></li>
+								<li><a href="{% url 'logout' %}">Logout</a></li>
+                                {% else %}
+                                <li><a href="{% url 'login' %}">Login</a></li>
+                                {% endif %}
+							</ul>
+						</nav>
+					</div>
+					<!-- //nav -->
+					<div class="d-flex mt-lg-1 mt-sm-2 mt-3 justify-content-center">
+						<!-- download -->
+						<a class="dwn-w3ls btn" href="http://w3layouts.com/" target="_blank">
+							<span class="fa fa-cloud-download"></span>
+						</a>
+						<!-- //download -->
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- //header -->
+
+		<!-- banner -->
+		<div class="banner_w3lspvt position-relative">
+			<div class="container">
+				<div class="d-md-flex">
+					<div class="w3ls_banner_txt">
+						<h3 class="w3ls_pvt-title">Sistem Pengelolaan Data Sampah <br><span>Kota Semarang</span></h3>
+						<p class="text-sty-banner">Sistem ini merupakan sistem berbasis web yang pengembangannya dalam hal pengelolaan informasi data sampah yang ada di kota Semarang, Jawa Tengah, Indonesia.</p>
+						<a href="{% url 'wasteweb:tentang' %}" class="btn button-style mt-md-5 mt-4">Selengkapnya</a>
+					</div>
+					<div class="banner-img">
+						<img src="{% static 'images/banner.png' %}" alt="" class="img-fluid">
+					</div>
+				</div>
+			</div>
+			<!-- animations effects -->
+			<div class="icon-effects-w3l">
+				<img src="{% static 'images/shape1.png' %}" alt="" class="img-fluid shape-wthree shape-w3-one">
+				<img src="{% static 'images/shape2.png' %}" alt="" class="img-fluid shape-wthree shape-w3-two">
+				<img src="{% static 'images/shape3.png' %}" alt="" class="img-fluid shape-wthree shape-w3-three">
+				<img src="{% static 'images/shape5.png' %}" alt="" class="img-fluid shape-wthree shape-w3-four">
+				<img src="{% static 'images/shape4.png' %}" alt="" class="img-fluid shape-wthree shape-w3-five">
+				<img src="{% static 'images/shape6.png' %}" alt="" class="img-fluid shape-wthree shape-w3-six">
+			</div>
+			<!-- //animations effects -->
+		</div>
+		<!-- //banner -->
+	</div>
+	<!-- //main banner -->
+
+	<!-- what we do section -->
+	<div class="what bg-li py-5" id="tentang">
+		<div class="container py-xl-5 py-lg-3">
+			<div class="row about-bottom-w3l text-center mt-4">
+				<div class="col-lg-4 about-grid">
+					<div class="about-grid-main">
+						<img src="{% static 'images/img1.png' %}" alt="" class="img-fluid">
+						<h4 class="my-4">Tentang Kami</h4>
+						<p> Sistem ini merupakan pengembangan berbasis web dalam hal pengelolaan informasi data sampah yang ada di kota Semarang, Jawa Tengah, Indonesia.</p>
+						<a href="{% url 'wasteweb:tentang' %}" class="button-w3ls btn mt-sm-5 mt-4">Selengkapnya</a>
+					</div>
+				</div>
+				<div class="col-lg-4 about-grid my-lg-0 my-5">
+					<div class="about-grid-main">
+						<img src="{% static 'images/img2.png' %}" alt="" class="img-fluid">
+						<h4 class="my-4">Siapa yang bisa mengakses?</h4>
+						<p>Publik dapat mengakses informasi laporan rekapitulasi data sampah kota Semarang yang diinput oleh operator sistem informasi pengelolaan sampah.</p>
+					</div>
+				</div>
+				<div class="col-lg-4 about-grid">
+					<div class="about-grid-main">
+						<img src="{% static 'images/img3.png' %}" alt="" class="img-fluid">
+						<h4 class="my-4">Kontak</h4>
+						<p>Untuk Industri/Lembaga Masyarakat yang ingin berkontribusi tentang pengelolaan sampah bisa menghubungi pihak DLH Kota Semarang.</p>
+						<a href="{% url 'wasteweb:kontak' %}" class="button-w3ls btn mt-sm-5 mt-4">Selengkapnya</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- //what we do section -->
+
+	<!-- middle -->
+	<section class="midd-w3 py-5" id="laporan">
+		<div class="container py-xl-5 py-lg-3">
+			<div class="row">
+				<div class="col-lg-6 about-right-faq">
+					<h6>Laporan Data Sampah</h6>
+					<h3 class="text-da">REPORT</h3>
+					<p class="mt-4">Laporan data sampah (Report) dapat diakses oleh secara bebas/publik oleh seluruh masyarakat. Data Sampah merupakan inputan dari:</p>
+					<ul class="w3l-right-book mt-4">
+						<li>Data sampah TPS/TPA</li>
+						<li>Data Sampah di Bank Sampah</li>
+					</ul>
+					<a href="{% url 'wasteweb:report' %}" class="btn button-style button-style-2 mt-sm-5 mt-4">Report Selengkapnya</a>
+				</div>
+				<div class="col-lg-6 left-wthree-img text-right">
+					<img src="{% static 'images/b1.png' %}" alt="" class="img-fluid mt-5" />
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- //middle -->
+
+	<!-- services -->
+	<section class="banner-bottom-w3layouts bg-li py-5" id="apa">
+		<div class="container py-xl-5 py-lg-3">
+			<h3 class="tittle text-center font-weight-bold">Apa Saja?</h3>
+			<p class="sub-tittle text-center mt-3 mb-sm-5 mb-4">Yang terdapat pada Sistem PDSK berikut.</p>
+			<div class="row pt-lg-4">
+				<div class="col-lg-4 about-in text-center">
+					<div class="card">
+						<div class="card-body">
+							<div class="bg-clr-w3l">
+								<span class="fa fa-line-chart"></span>
+							</div>
+							<h5 class="card-title mt-4 mb-3">Report Data</h5>
+							<p class="card-text">Laporan report data sampah kota di kota Semarang.</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 about-in text-center my-lg-0 my-3">
+					<div class="card active">
+						<div class="card-body">
+							<div class="bg-clr-w3l">
+								<span class="fa fa-usd"></span>
+							</div>
+							<h5 class="card-title mt-4 mb-3">Bank Sampah</h5>
+							<p class="card-text">Sampah yang dikelola dan diperjual-belikan dari Bank Sampah.</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 about-in text-center">
+					<div class="card">
+						<div class="card-body">
+							<div class="bg-clr-w3l">
+								<span class="fa fa-lightbulb-o"></span>
+							</div>
+							<h5 class="card-title mt-4 mb-3">Inputan Data Jumlah Sampah</h5>
+							<p class="card-text">Input jumlah data sampah kota Semarang (TPS/TPA serta Bank Sampah).</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- //services -->
+
+	<!-- partners -->
+	<section class="partners py-5" id="partners">
+		<div class="container py-xl-5 py-lg-3">
+			<h3 class="tittle text-center font-weight-bold">Partner Kami</h3>
+			<p class="sub-tittle text-center mt-3 mb-sm-5 mb-4">Pihak-pihak yang terkait pengelolaan data sampah lingkup kota Semarang.</p>
+			<div class="row grid-part text-center pt-4">
+				<div class="text-center col-md-2 col-4">
+					<div class="text-center parts-w3ls">
+						<a href="http://dlhk.semarangkota.go.id"><span class="fa fa-opencart"></span></a>
+						<h4>DLHK Kota Semarang</h4>
+					</div>
+				</div>
+				<div class="text-center col-md-2 col-4 mt-md-0 mt-4">
+					<div class="text-center parts-w3ls">
+						<a href="http://mapgeo.id/dkp/"><span class="fa fa-openid"></span></a>
+						<h4>Dinas Kebersihan Kota Semarang</h4>
+					</div>
+				</div>
+				<div class="text-center col-md-2 col-4 mt-md-0 mt-4">
+					<div class="text-center parts-w3ls">
+						<a href="http://semarangkota.go.id"><span class="fa fa-skyatlas"></span></a>
+						<h4>Pemkot Kota Semarang</h4>
+					</div>
+				</div>
+				<div class="text-center col-md-2 col-4 mt-md-0 mt-4">
+					<div class="text-center parts-w3ls">
+						<a href="#"><span class="fa fa-ravelry"></span></a>
+						<h4>Publik/Masyarakat</h4>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- //partners -->
+
+	<!-- footer -->
+	<footer class="bg-li py-5">
+		<div class="container py-xl-5 py-lg-3">
+			<!-- subscribe -->
+			<div class="subscribe mx-auto">
+				<div class="icon-effect-w3">
+					<span class="fa fa-envelope"></span>
+				</div>
+				<h2 class="tittle text-center font-weight-bold">Tetap terhubung!</h2>
+				<p class="sub-tittle text-center mt-3 mb-sm-5 mb-4">Berlangganan melalui email ntuk mengetahui perkembangan lebih lanjut terkait pengelolaan sampah di Kota Semarang.</p>
+				<form action="#" method="post" class="subscribe-wthree pt-2">
+					<div class="d-flex subscribe-wthree-field">
+						<input class="form-control" type="email" placeholder="Tuliskan email Anda..." name="email" required="">
+						<button class="btn form-control w-50" type="submit">Berlangganan</button>
+					</div>
+				</form>
+			</div>
+			<!-- //subscribe -->
+		</div>
+	</footer>
+
+<!-- //footer -->
+	<!-- copyright bottom -->
+	<div class="copy-bottom bg-li py-4 border-top">
+		<div class="container-fluid">
+			<div class="d-md-flex px-md-3 position-relative text-center">
+				<!-- footer social icons -->
+				<div class="social-icons-footer mb-md-0 mb-3">
+					<ul class="list-unstyled">
+						<li>
+							<a href="http://facebook.com/DLHSemarang">
+								<span class="fa fa-facebook"></span>
+							</a>
+						</li>
+						<li>
+							<a href="http://twitter.com/dlhkotasemarang">
+								<span class="fa fa-twitter"></span>
+							</a>
+						</li>
+						<li>
+							<a href="dlh.semarangkota@gmail.com">
+								<span class="fa fa-google-plus"></span>
+							</a>
+						</li>
+						<li>
+							<a href="http://instagram.com/dlh.semarang">
+								<span class="fa fa-instagram"></span>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!-- //footer social icons -->
+				<!-- copyright -->
+				<div class="copy_right mx-md-auto mb-md-0 mb-3">
+					<p class="text-bl let">© 2019 Sistem Pengelolaan Data Sampah Kota Semarang. All rights reserved | Desain oleh
+						<a href="http://dlh.semarangkota.go.id/" target="_blank">DLHK Kota Semarang</a>
+					</p>
+				</div>
+				<!-- //copyright -->
+				<!-- move top icon -->
+				<a href="#home" class="move-top text-center">
+					<span class="fa fa-level-up" aria-hidden="true"></span>
+				</a>
+				<!-- //move top icon -->
+			</div>
+		</div>
+	</div>
+	<!-- //copyright bottom -->
+
+</body>
+
+</html>
