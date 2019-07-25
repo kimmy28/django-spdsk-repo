@@ -1,6 +1,6 @@
 coreapi>=2.3,<2.4
 django>=2.2.1
-djangorestframework>=3.8,<3.9
+djangorestframework>=3.9.1
 virtualenv>=16.5.0
 django_tables2>=2.0.6
 django_tables2_reports>=0.1.3
